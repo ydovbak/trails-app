@@ -1,5 +1,7 @@
 package com.dovbak.trails.models;
 
+import com.google.android.gms.maps.model.LatLng;
+
 public class TrailPoint {
 
     private String name;
@@ -51,5 +53,8 @@ public class TrailPoint {
         this.order = order;
     }
 
+    public LatLng toLatLng() {
+        return new LatLng(Double.parseDouble(lat), Double.parseDouble(lng));
+    }
 
 }

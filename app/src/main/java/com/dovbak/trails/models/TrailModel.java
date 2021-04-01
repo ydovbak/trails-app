@@ -1,9 +1,10 @@
 package com.dovbak.trails.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class TrailModel {
+public class TrailModel implements Serializable {
     private String name;
     private String description;
     private ArrayList<TrailPoint> points;

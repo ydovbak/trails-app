@@ -6,11 +6,13 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -42,6 +44,8 @@ public class TrailsFragment extends Fragment {
     private ArrayList<TrailModel> trails = new ArrayList<>();
     private RecyclerView recyclerView;
     private MyTrailRecyclerViewAdapter adapter;
+
+    private boolean hasDataLoaded = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -77,9 +81,6 @@ public class TrailsFragment extends Fragment {
 //            }
 //        });
 
-        // show toast
-        Toast.makeText(getContext(), ((MainActivity) getActivity()).getUserName() , Toast.LENGTH_LONG).show();
-
         return view;
     }
 
@@ -91,18 +92,37 @@ public class TrailsFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.trails_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
-        adapter = new MyTrailRecyclerViewAdapter(trails);
+        adapter = new MyTrailRecyclerViewAdapter(trails, new MyTrailRecyclerViewAdapter.MyTrailAdapterClickListener() {
+            @Override
+            public void onTrailClick(TrailModel trail) {
+                // pass clicked trail object to view fragment
+                Bundle args = new Bundle();
+                args.putSerializable("trail", trail);
+                // navigate
+                Navigation.findNavController(getActivity(), R.id.nav_host_fragment)
+                        .navigate(R.id.action_trailsFragment_to_trailViewFragment, args);
+            }
+        });
         recyclerView.setAdapter(adapter);
 
+        // we need this flag in case user comes back to this fragment
+        // by pressing back button. This way we prevent
+        // duplication of data as onCreateView is being called
+        // every time fragment is being displayed / navigated to
+        if(!hasDataLoaded) {
+            // get current user
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        // get current user
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        fetchTrailsFromDb(user.getUid());
+            // fetch trails of that particular user
+            fetchTrailsFromDb(user.getUid());
+        }
     }
 
     // fetches data from the firestore
     private void fetchTrailsFromDb(String userId) {
         // all records where user id is equal to the user that just authorised
+        trails.clear();
+        adapter.notifyDataSetChanged();
         dbRef.whereEqualTo("userId", userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -115,8 +135,10 @@ public class TrailsFragment extends Fragment {
                                 TrailModel trailModel = document.toObject(TrailModel.class);
                                 trails.add(trailModel);
                                 adapter.notifyDataSetChanged();
+                                hasDataLoaded = true;
                             }
                         } else {
+                            Toast.makeText(getContext(), "Failed to load trails", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }

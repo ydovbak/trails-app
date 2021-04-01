@@ -14,23 +14,26 @@ import java.util.List;
 public class MyTrailRecyclerViewAdapter extends RecyclerView.Adapter<MyTrailRecyclerViewAdapter.ViewHolder> {
 
     private final List<TrailModel> mValues;
+    private MyTrailAdapterClickListener clickListener;
 
-    public MyTrailRecyclerViewAdapter(List<TrailModel> items) {
+    public MyTrailRecyclerViewAdapter(List<TrailModel> items, MyTrailAdapterClickListener clickListener) {
         mValues = items;
+        this.clickListener = clickListener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.trail_item, parent, false);
-        return new ViewHolder(view);
+        return new ViewHolder(view, this.clickListener);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getName());
-        holder.mContentView.setText(mValues.get(position).getDescription());
+        TrailModel trail = mValues.get(position);
+        holder.trail = mValues.get(position);
+        holder.nameView.setText(mValues.get(position).getName());
+        holder.descView.setText(mValues.get(position).getDescription());
     }
 
     @Override
@@ -38,22 +41,39 @@ public class MyTrailRecyclerViewAdapter extends RecyclerView.Adapter<MyTrailRecy
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public TrailModel mItem;
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final View view;
+        public final TextView nameView;
+        public final TextView descView;
+        public TrailModel trail;
 
-        public ViewHolder(View view) {
+        public ViewHolder(View view, MyTrailAdapterClickListener clickListener) {
             super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            this.view = view;
+            nameView = (TextView) view.findViewById(R.id.item_number);
+            descView = (TextView) view.findViewById(R.id.content);
+            this.view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(clickListener != null) {
+                        clickListener.onTrailClick(trail);
+                    }
+                }
+            });
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + descView.getText() + "'";
         }
+
+        @Override
+        public void onClick(View v) {
+
+        }
+    }
+
+    public interface MyTrailAdapterClickListener {
+        void onTrailClick(TrailModel trail);
     }
 }

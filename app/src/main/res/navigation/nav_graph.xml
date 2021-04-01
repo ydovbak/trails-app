@@ -18,5 +18,14 @@
         android:id="@+id/trailsFragment"
         android:name="com.dovbak.trails.TrailsFragment"
         android:label="fragment_trails_list"
-        tools:layout="@layout/fragment_trails_list" />
+        tools:layout="@layout/fragment_trails_list" >
+        <action
+            android:id="@+id/action_trailsFragment_to_trailViewFragment"
+            app:destination="@id/trailViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/trailViewFragment"
+        android:name="com.dovbak.trails.TrailViewFragment"
+        android:label="fragment_trail_view"
+        tools:layout="@layout/fragment_trail_view" />
 </navigation>
