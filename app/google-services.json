@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1031008215275",
+    "project_id": "trails-app-6567f",
+    "storage_bucket": "trails-app-6567f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031008215275:android:a67e5924f0cd39a7085eae",
+        "android_client_info": {
+          "package_name": "com.dovbak.trails"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1031008215275-2v95s389m7daocjid0rgvr5shi69qv4h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeJbjKWJhqqBma1MLnHD9s-INdGi_CKCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1031008215275-2v95s389m7daocjid0rgvr5shi69qv4h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
