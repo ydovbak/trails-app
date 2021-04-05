@@ -117,8 +117,12 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_logout) {
+            // logout
+            FirebaseAuth.getInstance().signOut();
+            // and bring user to sigin fragment
+            Navigation.findNavController(MainActivity.this, R.id.nav_host_fragment)
+                    .navigate(R.id.moveToLoginFragment);
         }
 
         return super.onOptionsItemSelected(item);

@@ -5,8 +5,13 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/LoginFragment">
 
+    <!-- Global Action for logout -->
+    <action
+        android:id="@+id/moveToLoginFragment"
+        app:destination="@id/LoginFragment" />
 
-    <fragment android:id="@+id/LoginFragment"
+    <fragment
+        android:id="@+id/LoginFragment"
         android:name="com.dovbak.trails.LoginFragment"
         android:label="@string/login_fragment_label"
         tools:layout="@layout/fragment_login">
@@ -18,14 +23,26 @@
         android:id="@+id/trailsFragment"
         android:name="com.dovbak.trails.TrailsFragment"
         android:label="fragment_trails_list"
-        tools:layout="@layout/fragment_trails_list" >
+        tools:layout="@layout/fragment_trails_list">
         <action
             android:id="@+id/action_trailsFragment_to_trailViewFragment"
             app:destination="@id/trailViewFragment" />
+        <action
+            android:id="@+id/action_trailsFragment_to_createTrailFragment"
+            app:destination="@id/createTrailFragment" />
     </fragment>
     <fragment
         android:id="@+id/trailViewFragment"
         android:name="com.dovbak.trails.TrailViewFragment"
         android:label="fragment_trail_view"
         tools:layout="@layout/fragment_trail_view" />
+    <fragment
+        android:id="@+id/createTrailFragment"
+        android:name="com.dovbak.trails.CreateTrailFragment"
+        android:label="fragment_create_trail"
+        tools:layout="@layout/fragment_create_trail">
+        <action
+            android:id="@+id/action_createTrailFragment_to_trailsFragment"
+            app:destination="@id/trailsFragment" />
+    </fragment>
 </navigation>

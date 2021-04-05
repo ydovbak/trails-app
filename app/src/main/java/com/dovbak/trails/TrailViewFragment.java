@@ -17,7 +17,9 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.type.LatLngOrBuilder;
 
 import java.util.ArrayList;
 
@@ -41,26 +43,25 @@ public class TrailViewFragment extends Fragment {
 
             ArrayList<TrailPoint> points = trail.getPoints();
 
-            LatLng center;
             // if we don't have any points, just show center of the map
             if (points.size() == 0) {
-                center = new LatLng(0, 0);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(0, 0), 1));
             } else {
-                // otherwise get first point in the list
-                center = points.get(0).toLatLng();
+                // add marker for every point in the list
+                LatLngBounds.Builder bounds = LatLngBounds.builder();
+                for (TrailPoint point : points) {
+                    MarkerOptions marker = new MarkerOptions()
+                            .position(point.toLatLng())
+                            .title(point.getName());
+                    // add marker to the map
+                    googleMap.addMarker(marker);
+                    // extend bounds by adding marker to it
+                    bounds.include(point.toLatLng());
+                }
+
+                // set camera to cover the range of markers within our bounds
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds.build(), 250));
             }
-
-            // add marker for every point in the list
-            for (TrailPoint point : points) {
-                MarkerOptions marker = new MarkerOptions()
-                        .position(point.toLatLng())
-                        .title(point.getName());
-                googleMap.addMarker(marker);
-            }
-
-            // add bounds to display
-
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 16));
         }
     };
 

@@ -12,15 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.dovbak.trails.models.TrailModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -28,9 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -38,14 +35,12 @@ import java.util.List;
 public class TrailsFragment extends Fragment {
 
     public static final String TAG = "TRAILS_DATA_FRAGMENT";
-    private Button addTrail;
+    private FloatingActionButton addTrail;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private CollectionReference dbRef = db.collection("trails");
+    private CollectionReference trailsColRef = db.collection("trails");
     private ArrayList<TrailModel> trails = new ArrayList<>();
     private RecyclerView recyclerView;
     private MyTrailRecyclerViewAdapter adapter;
-
-    private boolean hasDataLoaded = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -72,14 +67,14 @@ public class TrailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_trails_list, container, false);
 
         // init button
-        //addTrail = (Button)view.findViewById(R.id.btn_add_trail);
-
-//        addTrail.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+        addTrail = (FloatingActionButton) view.findViewById(R.id.btn_add_trail);
+        addTrail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Navigation.findNavController(getActivity(), R.id.nav_host_fragment)
+                        .navigate(R.id.action_trailsFragment_to_createTrailFragment);
+            }
+        });
 
         return view;
     }
@@ -105,17 +100,11 @@ public class TrailsFragment extends Fragment {
         });
         recyclerView.setAdapter(adapter);
 
-        // we need this flag in case user comes back to this fragment
-        // by pressing back button. This way we prevent
-        // duplication of data as onCreateView is being called
-        // every time fragment is being displayed / navigated to
-        if(!hasDataLoaded) {
-            // get current user
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        // get current user
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-            // fetch trails of that particular user
-            fetchTrailsFromDb(user.getUid());
-        }
+        // fetch trails of that particular user
+        fetchTrailsFromDb(user.getUid());
     }
 
     // fetches data from the firestore
@@ -123,7 +112,7 @@ public class TrailsFragment extends Fragment {
         // all records where user id is equal to the user that just authorised
         trails.clear();
         adapter.notifyDataSetChanged();
-        dbRef.whereEqualTo("userId", userId)
+        trailsColRef.whereEqualTo("userId", userId)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -135,7 +124,6 @@ public class TrailsFragment extends Fragment {
                                 TrailModel trailModel = document.toObject(TrailModel.class);
                                 trails.add(trailModel);
                                 adapter.notifyDataSetChanged();
-                                hasDataLoaded = true;
                             }
                         } else {
                             Toast.makeText(getContext(), "Failed to load trails", Toast.LENGTH_SHORT).show();

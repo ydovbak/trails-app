@@ -16,7 +16,7 @@ public class TrailModel implements Serializable {
         this.points = points;
     }
 
-    public TrailModel(String name, String description,  TrailPoint[]points) {
+    public TrailModel(String name, String description, TrailPoint[] points) {
         this.name = name;
         this.description = description;
         this.points.addAll(Arrays.asList(points));
